@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='sipeapps',
-    version='3.0.4',
+    version='0.0.1',
     packages=['financeiro'],
     include_package_data=True,
     license='MIT License',
