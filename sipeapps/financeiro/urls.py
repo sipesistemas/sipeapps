@@ -13,8 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path
+from rest_framework import routers
 
-urlpatterns = [
+from sipeapps.financeiro.viewsets import ContaViewset, CategoriaFinanceiroViewSet
 
-]
+router = routers.SimpleRouter()
+router.register(r'contas', ContaViewset)
+router.register(r'categorias', CategoriaFinanceiroViewSet)
+
+urlpatterns = router.urls
