@@ -4,7 +4,7 @@ from rest_framework import serializers
 from sipeapps.common.models import AbstratoModel
 
 
-class CategoriaFinanceiro(AbstratoModel):
+class Categoria(AbstratoModel):
     RECEITA = 'RECEITA'
     DESPESA = 'DESPESA'
 
@@ -26,7 +26,10 @@ class CategoriaFinanceiro(AbstratoModel):
                 if cat.categoria_pai == self:
                     raise serializers.ValidationError('Não é permitido ser subcategoria desta categoria.')
 
-        return super(CategoriaFinanceiro, self).save(*args, **kwargs)
+        return super(Categoria, self).save(*args, **kwargs)
+
+    class Meta:
+        db_table = 'financeiro_categoria'
 
 
 class Conta(AbstratoModel):

@@ -1,0 +1,23 @@
+[
+  {
+    "model": "auth.Usuario",
+    "pk": 1,
+    "fields": {
+      "login": "atoi",
+      "senha": "pbkdf2_sha256$120000$hifF7G8DE3Yp$LRSgX8wrpEWiV8A6QHZgJmNLZf8fdV3Z1WA4wJLdyfQ=",
+      "is_admin": true,
+      "datahora_cadastro": "2019-07-10 12:00:00-03:00",
+      "datahora_alteracao": "2019-07-10 12:00:00-03:00"
+    }
+  },
+  {
+    "model": "auth.Token",
+    "pk": 1,
+    "fields": {
+      "usuario_id": 1,
+      "chave": "123",
+      "datahora_cadastro": "2019-07-10 12:00:00-03:00",
+      "datahora_alteracao": "2019-07-10 12:00:00-03:00"
+    }
+  }
+]

@@ -1,30 +1,26 @@
-import datetime
 from rest_framework import status
 
+from sipeapps.pessoa.models import Profissao
+from sipeapps.pessoa.serializers import ProfissaoSerializer
 from sipeapps.common.test_base import TestBaseAtoi
-from sipeapps.financeiro.models import Conta
-from sipeapps.financeiro.serializers import ContaSerializer
 
 
-class ContasAPITest(TestBaseAtoi):
-    url_base = '/financeiro/contas/'
+class ProfissaoAPITest(TestBaseAtoi):
+    url_base = '/pessoa/profissoes/'
     fixtures = ['usuario']
 
     def setUp(self):
-        self.conta = Conta.objects.create(tipo=Conta.CONTA_CORRENTE, saldo_inicial=0, data_saldo_inicial=datetime.date(2019, 11, 5))
-        self.serializer = ContaSerializer(instance=self.conta)
+        self.profissao = Profissao.objects.create(nome='Profissao')
+        self.serializer = ProfissaoSerializer(instance=self.profissao)
         self.client.credentials(HTTP_AUTHORIZATION='Token 123')
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
-        self.assertCountEqual(data.keys(), {'id', 'nome', 'tipo', 'saldo_inicial', 'data_saldo_inicial'})
+        self.assertCountEqual(data.keys(), {'id', 'nome'})
 
     def test_cadastrar(self):
         self.data = {
-            'nome': 'Teste2',
-            'tipo': Conta.CONTA_CORRENTE,
-            'data_saldo_inicial': '14/10/2010',
-            'saldo_inicial': '1000.00',
+            'nome': 'Programador',
         }
         response = self.client.post(self.url_base, self.data)
         assert response.status_code == status.HTTP_201_CREATED
@@ -35,12 +31,12 @@ class ContasAPITest(TestBaseAtoi):
 
     def test_atualizar(self):
         new_name = {
-            'nome': 'TESTE'
+            'nome': 'Programador Teste'
         }
-        response = self.client.patch(self.url_base + str(self.conta.id) + "/", new_name)
+        response = self.client.patch(self.url_base + str(self.profissao.id) + "/", new_name)
         assert response.status_code == status.HTTP_200_OK
         assert response.data['nome'] == new_name['nome']
 
     def test_excluir(self):
-        response = self.client.delete(self.url_base + str(self.conta.id) + "/")
+        response = self.client.delete(self.url_base + str(self.profissao.id) + "/")
         assert response.status_code == status.HTTP_204_NO_CONTENT

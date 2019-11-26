@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from sipeapps.financeiro.models import Conta, CategoriaFinanceiro
+from sipeapps.financeiro.models import Conta, Categoria
 
 
 class CategoriaFinanceiroSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CategoriaFinanceiro
+        model = Categoria
         fields = ('id', 'nome', 'categoria_pai', 'natureza')
 
 
@@ -18,7 +18,7 @@ class CategoriaFinanceiroTreeSerializer(serializers.ModelSerializer):
     categorias_filhas = _RecursiveSerializer(many=True, read_only=True)
 
     class Meta:
-        model = CategoriaFinanceiro
+        model = Categoria
         fields = ('id', 'nome', 'categoria_pai', 'categorias_filhas', 'natureza')
 
 

@@ -15,11 +15,10 @@ Including another URLconf
 """
 from rest_framework import routers
 
-from sipeapps.financeiro.viewsets import ContaViewset, CategoriaFinanceiroViewSet
+from sipeapps.pessoa.viewsets import ClienteViewset, ProfissaoViewset
 
 router = routers.SimpleRouter()
-router.register(r'contas', ContaViewset)
-router.register(r'categorias', CategoriaFinanceiroViewSet)
+router.register(r'clientes', ClienteViewset)
+router.register(r'profissoes', ProfissaoViewset)
 
 urlpatterns = router.urls
-

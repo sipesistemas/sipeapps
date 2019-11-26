@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import sys
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -31,16 +33,18 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
-    'django.contrib.auth',
+    # 'django.contrib.auth',
     'rest_framework',
-    'sipeapps.financeiro'
+    'sipeapps.auth',
+    'sipeapps.financeiro',
+    'sipeapps.pessoa'
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.middleware.security.SecurityMiddleware',
+    # 'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -53,10 +57,10 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                # 'django.template.context_processors.debug',
+                # 'django.template.context_processors.request',
+                # 'django.contrib.auth.context_processors.auth',
+                # 'django.contrib.messages.context_processors.messages',
             ],
         },
     },
@@ -82,18 +86,18 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    # },
 ]
 
 # Internationalization
@@ -114,11 +118,28 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
-    'DATE_INPUT_FORMATS': ['%d-%m-%Y', '%d/%m/%Y'],
-    'DATETIME_INPUT_FORMATS': ['%d/%m/%Y %H:%M', '%d/%m/%Y %H:%M:%S']
-}
+EXECUTANDO_TESTES = sys.argv[1:2] == ['test']
+
+if EXECUTANDO_TESTES:
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+            'sipeapps.auth.authentication.TokenAuthentication',
+        ],
+        'DEFAULT_PERMISSION_CLASSES': (),
+        'UNAUTHENTICATED_USER': None,
+        'DATE_INPUT_FORMATS': ['%d-%m-%Y', '%d/%m/%Y'],
+        'DATETIME_INPUT_FORMATS': ['%d/%m/%Y %H:%M', '%d/%m/%Y %H:%M:%S']
+    }
+else:
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+            'sipeapps.auth.authentication.TokenAuthentication',
+        ],
+        'DEFAULT_PERMISSION_CLASSES': (
+            'rest_framework.permissions.IsAuthenticated',
+            'sipeapps.auth.permissions.CheckPermission',
+        ),
+        'UNAUTHENTICATED_USER': None,
+        'DATE_INPUT_FORMATS': ['%d-%m-%Y', '%d/%m/%Y'],
+        'DATETIME_INPUT_FORMATS': ['%d/%m/%Y %H:%M', '%d/%m/%Y %H:%M:%S']
+    }

@@ -16,5 +16,7 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
+    path('auth/', include('sipeapps.auth.urls')),
     path('financeiro/', include('sipeapps.financeiro.urls')),
+    path('pessoa/', include('sipeapps.pessoa.urls')),
 ]

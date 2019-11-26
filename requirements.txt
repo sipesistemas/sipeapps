@@ -1,3 +1,4 @@
 Django==2.2.7
 djangorestframework==3.10.3
 model-mommy
+Pillow==5.2.0

@@ -1,17 +1,19 @@
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 
-from sipeapps.financeiro.models import CategoriaFinanceiro
+from sipeapps.common.test_base import TestBaseAtoi
+from sipeapps.financeiro.models import Categoria
 from sipeapps.financeiro.serializers import CategoriaFinanceiroSerializer
-from sipeapps.financeiro.tests.test_base import TestBaseAtoi
 
 
 class CategoriaFinanceiroTest(TestBaseAtoi):
     url_base = "/financeiro/categorias/"
+    fixtures = ['usuario']
 
     def setUp(self):
-        self.categoria = CategoriaFinanceiro.objects.create(nome='CAT A', natureza=CategoriaFinanceiro.RECEITA)
+        self.categoria = Categoria.objects.create(nome='CAT A', natureza=Categoria.RECEITA)
         self.serializer = CategoriaFinanceiroSerializer(instance=self.categoria)
+        self.client.credentials(HTTP_AUTHORIZATION='Token 123')
 
     def test_contains_expected_fields(self):
         data = self.serializer.data
@@ -20,7 +22,7 @@ class CategoriaFinanceiroTest(TestBaseAtoi):
     def test_cadastrar(self):
         self.data = {
             'nome': 'CAT B',
-            'natureza': CategoriaFinanceiro.RECEITA
+            'natureza': Categoria.RECEITA
         }
         response = self.client.post(self.url_base, self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -29,7 +31,7 @@ class CategoriaFinanceiroTest(TestBaseAtoi):
         self.data = {
             'nome': 'CAT A1',
             'categoria_pai': self.categoria.pk,
-            'natureza': CategoriaFinanceiro.RECEITA
+            'natureza': Categoria.RECEITA
         }
         response = self.client.post(self.url_base, self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -42,7 +44,7 @@ class CategoriaFinanceiroTest(TestBaseAtoi):
     def test_atualizar(self):
         new_name = {
             'nome': 'CAT C',
-            'natureza': CategoriaFinanceiro.RECEITA
+            'natureza': Categoria.RECEITA
         }
         response = self.client.patch(self.url_base + str(self.categoria.id) + "/", new_name)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -55,7 +57,7 @@ class CategoriaFinanceiroTest(TestBaseAtoi):
     def test_nao_permitir_a_categoria_pai_de_uma_categoria_ser_ela_mesma(self):
         # Categoria A ser filha de Categoria A
         with self.assertRaises(ValidationError) as c:
-            cat_a = CategoriaFinanceiro.objects.create(nome="Categoria A")
+            cat_a = Categoria.objects.create(nome="Categoria A")
             cat_a.categoria_pai = cat_a
             cat_a.save()
         self.assertEqual(c.exception.detail[0], 'Uma categoria não pode ser subcategoria dela mesma.')
@@ -63,8 +65,8 @@ class CategoriaFinanceiroTest(TestBaseAtoi):
     def test_nao_permitir_a_ciclo_entre_as_categorias(self):
         # CAT B ser filha de CAT A
         # CAT A ser filha de CAT B
-        cat_a = CategoriaFinanceiro.objects.create(nome="Categoria A")
-        cat_b = CategoriaFinanceiro.objects.create(nome="Categoria B")
+        cat_a = Categoria.objects.create(nome="Categoria A")
+        cat_b = Categoria.objects.create(nome="Categoria B")
 
         cat_b.categoria_pai = cat_a
         cat_b.save()
@@ -74,14 +76,14 @@ class CategoriaFinanceiroTest(TestBaseAtoi):
         self.assertEqual(c.exception.detail[0], 'Não é permitido ser subcategoria desta categoria.')
 
     def test_retornar_tree_das_categorias(self):
-        CategoriaFinanceiro.objects.all().delete()
-        cat_a = CategoriaFinanceiro.objects.create(nome="Categoria A", natureza=CategoriaFinanceiro.RECEITA)
-        cat_b = CategoriaFinanceiro.objects.create(nome="Categoria B", categoria_pai=cat_a, natureza=CategoriaFinanceiro.RECEITA)
-        cat_c = CategoriaFinanceiro.objects.create(nome="Categoria C", categoria_pai=cat_b, natureza=CategoriaFinanceiro.RECEITA)
+        Categoria.objects.all().delete()
+        cat_a = Categoria.objects.create(nome="Categoria A", natureza=Categoria.RECEITA)
+        cat_b = Categoria.objects.create(nome="Categoria B", categoria_pai=cat_a, natureza=Categoria.RECEITA)
+        cat_c = Categoria.objects.create(nome="Categoria C", categoria_pai=cat_b, natureza=Categoria.RECEITA)
 
-        cat_d = CategoriaFinanceiro.objects.create(nome="Categoria D", natureza=CategoriaFinanceiro.DESPESA)
-        cat_e = CategoriaFinanceiro.objects.create(nome="Categoria E", categoria_pai=cat_d, natureza=CategoriaFinanceiro.DESPESA)
-        cat_f = CategoriaFinanceiro.objects.create(nome="Categoria F", categoria_pai=cat_d, natureza=CategoriaFinanceiro.DESPESA)
+        cat_d = Categoria.objects.create(nome="Categoria D", natureza=Categoria.DESPESA)
+        cat_e = Categoria.objects.create(nome="Categoria E", categoria_pai=cat_d, natureza=Categoria.DESPESA)
+        cat_f = Categoria.objects.create(nome="Categoria F", categoria_pai=cat_d, natureza=Categoria.DESPESA)
 
         response = self.client.get(self.url_base + "tree/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
